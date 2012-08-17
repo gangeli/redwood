@@ -1,0 +1,24 @@
+bug: multithreaded environment breaks RepeatedRecordHandler (doesn't print
+     number of missed lines); this might be a general bug with
+     RepeatedRecordHandler
+bug: RepeatedRecordHandler thinks that empty tracks are still seen (prints
+     the "repeated messages" message)
+bug: Approximate repeated record prints wrong repeat count on top-level log
+     messages
+bug: In multithreaded environment, time a track took is time from begin to
+     print, not begin to end (the latter is, in general, shorter).
+
+feature: tests. they don't exist right now.
+feature: stack trace appending should maybe be a handler (for efficiency)
+feature: prevent interleaving of stdout/stderr (if doable...maybe via locking)
+feature: support for automatically assigning channels from calling
+         class/method
+feature: convert the main() method into an ITest
+
+ideas for new handlers:
+  - record histogram of messages, tell you about frequent log messages when
+    program ends
+  - if messages match certain criteria, dump a stack trace (for tracking down
+    random print statements)
+  - basic filtering: filter messages if they match certain channels, source
+    methods, are inside a specific track, etc.

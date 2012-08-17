@@ -1,10 +1,9 @@
---------------------------------------------------------------------------------
 REDWOOD LOGGER
+==============
 
 Authors:
-  Gabor Angeli (gangeli)
-  David McClosky (dmcc)
---------------------------------------------------------------------------------
+-  Gabor Angeli (gangeli)
+-  David McClosky (dmcc)
 
 Redwood was developed at Stanford by students in the Stanford NLP Group.
 A tutorial in docs/tutorial.pdf, presented to the group, provides a good

@@ -25,6 +25,9 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 
+import java.lang.reflect.*;
+
+
 /**
  * Reroutes java.util.logging messages to the Redwood logging system.
  * 
@@ -136,5 +139,13 @@ public class JavaUtilLoggingAdaptor {
 
     Redwood.log(Redwood.DBG, "at the bottom");
     Redwood.endTrack("Adaptation test");
+    
+//    // Reverse mapping
+//    Logger topLogger = Logger.getLogger("global");
+//    Redwood.log("Hello from Redwood!");
+//    RedwoodConfiguration.empty().rootHandler(
+//        RedirectOutputHandler.fromJavaUtilLogging(topLogger)).apply();
+//    Redwood.log("Hello from Redwood -> Java!");
+//    Redwood.log("Hello from Redwood -> Java again!");
   }
 }

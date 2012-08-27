@@ -1157,11 +1157,13 @@ public class Redwood {
       this.stream = stream;
     }
     /**
-     * Print a string to the console, in STDOUT, without the trailing newline
+     * Print a string to the console, without the trailing newline
+     * @param channels The channel this line is being printed to;
+     *                 not relevant for this handler.
      * @param line The string to be printed.
      */
     @Override
-    public void print(String line) {
+    public void print(Object[] channels, String line) {
       stream.print(line); stream.flush();
     }
     public static ConsoleHandler out(){ return new ConsoleHandler(realSysOut); }
@@ -1186,7 +1188,7 @@ public class Redwood {
 
     /** {@inheritDoc} */
     @Override
-    public void print(String line) {
+    public void print(Object[] channels, String line) {
       printWriter.write(line);
       printWriter.flush();
     }

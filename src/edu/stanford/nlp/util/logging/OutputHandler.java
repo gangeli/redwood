@@ -90,9 +90,13 @@ public abstract class OutputHandler extends LogRecordHandler{
   /**
    * Print a string to an output without the trailing newline.
    * Many output handlers can get by with just implementing this method.
+   * @param channel The channels this message was printed on; in most cases
+   *                  an implementing handler should not have to do anything with
+   *                  this. The channels should not be printed here.
+   *                  The channels may be null.
    * @param line The string to be printed.
    */
-  public abstract void print(String line);
+  public abstract void print(Object[] channel, String line);
 
 
   /**
@@ -144,12 +148,20 @@ public abstract class OutputHandler extends LogRecordHandler{
     return b;
   }
 
-  private void formatChannel(StringBuilder b, String channelStr, String channelToString){
+  /**
+   *  Format a channel
+   * @param b The StringBuilder to append to
+   * @param channelStr The [possibly truncated and/or modified] string
+   *                   to actually print to the StringBuilder
+   * @param channel The original channel
+   * @return |true| if the channel was printed (that is, appended to the StringBuilder)
+   */
+  protected boolean formatChannel(StringBuilder b, String channelStr, Object channel){
     if(this.channelColors == null && this.channelStyles == null){
       //(regular concat)
       b.append(channelStr);
     } else {
-      channelToString = channelToString.toLowerCase();
+      String channelToString = channel.toString().toLowerCase();
       //(default: no style)
       Color color = Color.NONE;
       Style style = Style.NONE;
@@ -178,6 +190,7 @@ public abstract class OutputHandler extends LogRecordHandler{
       //(format)
       style(b,channelStr,color,style);
     }
+    return true;  // Unless this method is overwritten, channel is always printed
   }
 
 
@@ -209,7 +222,7 @@ public abstract class OutputHandler extends LogRecordHandler{
       writeContent(signal.depth,signal.content,b);
       if(signal.content.toString().length() > 0){ b.append(" "); }
       //(print)
-      print( this.style(new StringBuilder(), b.toString(), trackColor, trackStyle).toString() );
+      print(null, this.style(new StringBuilder(), b.toString(), trackColor, trackStyle).toString() );
       this.missingOpenBracket = true;  //only set to false if actually updated track state
       //(update lines printed)
       if(info != null){
@@ -291,14 +304,14 @@ public abstract class OutputHandler extends LogRecordHandler{
     //--Write Channels
     if(leftMargin > 2) {	//don't print if not enough space
       //((print channels)
-      if(printableChannels.size() > 0){ b.append("["); cursorPos += 1; }
+      b.append("["); cursorPos += 1;
       Object lastChan = null;
+      boolean wasAnyChannelPrinted = false;
       for(int i=0; i<printableChannels.size(); i++) {
         Object chan = printableChannels.get(i);
         if(chan.equals(lastChan)){ continue; } //skip duplicate channels
         lastChan = chan;
-        //(get chan)
-        String chanToString = chan.toString();
+        //(get channel)
         String toPrint = chan.toString();
         if(toPrint.length() > leftMargin-1){ toPrint = toPrint.substring(0,leftMargin-2); }
         if(cursorPos+toPrint.length() >= leftMargin){
@@ -312,11 +325,18 @@ public abstract class OutputHandler extends LogRecordHandler{
           cursorPos = 1;
         }
         //(print flag)
-        formatChannel(b, toPrint, chanToString);
-        if(i < printableChannels.size()-1){ b.append(channelSeparatorChar); cursorPos += 1; }
+        boolean wasChannelPrinted = formatChannel(b, toPrint, chan);
+        wasAnyChannelPrinted = wasAnyChannelPrinted || wasChannelPrinted;
+        if(wasChannelPrinted && i < printableChannels.size()-1){ b.append(channelSeparatorChar); cursorPos += 1; }
         cursorPos += toPrint.length();
       }
-      if(printableChannels.size() > 0){ b.append("]"); cursorPos += 1; }
+      if (wasAnyChannelPrinted) {
+        b.append("]");
+        cursorPos += 1;
+      } else {
+        b.setLength(b.length() - 1);  // remove leading "["
+        cursorPos -= 1;
+      }
     }
     //--Content
     //(write content)
@@ -330,7 +350,7 @@ public abstract class OutputHandler extends LogRecordHandler{
     if (b.length() == 0 || b.charAt(b.length() - 1) != '\n') {
       b.append("\n");
     }
-    print(b.toString());
+    print(record.channels(), b.toString());
     //--Continue
     if(info != null){
       info.numElementsPrinted += 1;
@@ -399,7 +419,7 @@ public abstract class OutputHandler extends LogRecordHandler{
       }
       //(print)
       b.append("\n");
-      print(this.style(new StringBuilder(), b.toString(), trackColor, trackStyle).toString());
+      print(null, this.style(new StringBuilder(), b.toString(), trackColor, trackStyle).toString());
     } else {
       this.queuedTracks.removeLast();
     }

@@ -426,16 +426,23 @@ public class RedwoodConfiguration {
     if(get(props,"log.neatExit","false",used).equalsIgnoreCase("true")){
       config = config.neatExit();
     }
-    String channelsToShow = get(props,"log.showOnlyChannels",null,used);
-    String channelsToHide = get(props,"log.hideChannels",null,used);
+    //--Channel Visibility
+    // (parse properties)
+    String channelsToShow = get(props,"log.channels.show",null,used);
+    String channelsToHide = get(props,"log.channels.hide",null,used);
+    int channelWidth = Integer.parseInt(get(props, "log.channels.width", "20", used));
     if (channelsToShow != null && channelsToHide != null) {
-      throw new IllegalArgumentException("Can't specify both log.showOnlyChannels and log.hideChannels");
+      throw new IllegalArgumentException("Can't specify both log.channels.show and log.channels.hide");
     }
-    //--Channel visibility
+    // (set visibility)
     if (channelsToShow != null) {
-      config = config.showOnlyChannels(channelsToShow.split(","));
+      if(channelsToShow.equalsIgnoreCase("true")){
+        config = config.printChannels(channelWidth);
+      } else {
+        config = config.printChannels(channelWidth).showOnlyChannels(channelsToShow.split(","));
+      }
     } else if (channelsToHide != null) {
-      config = config.hideChannels(channelsToHide.split(","));
+      config = config.printChannels(channelWidth).hideChannels(channelsToHide.split(","));
     }
     //--Error Check
     for(Object propAsObj : props.keySet()) {

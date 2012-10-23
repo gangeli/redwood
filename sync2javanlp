@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+
+JAVANLP_ROOT=$1
+if [ "$1" == "" ]; then
+  echo "Usage: sync2javanlp [javanlp_root_directory]"
+fi
+
+JAVANLP_REDWOOD="$JAVANLP_ROOT/projects/core/src/edu/stanford/nlp/util/logging"
+if [ -d "$JAVANLP_REDWOOD" ]; then
+  for file in `ls src/edu/stanford/nlp/util/logging`; do
+    echo "Copying $file"
+    tail -n+18 "src/edu/stanford/nlp/util/logging/$file" > "$JAVANLP_REDWOOD/$file"
+  done
+  echo "DONE."
+else
+  echo "Could not find Redwood directory in $JAVANLP_REDWOOD"
+fi

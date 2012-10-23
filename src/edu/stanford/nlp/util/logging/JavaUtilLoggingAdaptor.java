@@ -118,34 +118,37 @@ public class JavaUtilLoggingAdaptor {
    * Simple test case.
    */
   public static void main(String[] args) {
-    Redwood.log(Redwood.DBG, "at the top");
-    Redwood.startTrack("Adaptation test");
-
-    Logger topLogger = Logger.getLogger("global");
-    topLogger.warning("I'm warning you!");
-    topLogger.severe("Now I'm using my severe voice.");
-    topLogger.info("FYI");
-
-    Redwood.log(Redwood.DBG, "adapting");
-    JavaUtilLoggingAdaptor.adapt();
-    topLogger.warning("I'm warning you in Redwood!");
-    JavaUtilLoggingAdaptor.adapt(); // should be safe to call this twice
-    topLogger.severe("Now I'm using my severe voice in Redwood!");
-    topLogger.info("FYI: Redwood rocks");
-
-    // make sure original java.util.logging levels are respected
-    topLogger.setLevel(Level.OFF);
-    topLogger.severe("We shouldn't see this message.");
-
-    Redwood.log(Redwood.DBG, "at the bottom");
-    Redwood.endTrack("Adaptation test");
-    
-//    // Reverse mapping
+//    Redwood.log(Redwood.DBG, "at the top");
+//    Redwood.startTrack("Adaptation test");
+//
 //    Logger topLogger = Logger.getLogger("global");
-//    Redwood.log("Hello from Redwood!");
-//    RedwoodConfiguration.empty().rootHandler(
-//        RedirectOutputHandler.fromJavaUtilLogging(topLogger)).apply();
-//    Redwood.log("Hello from Redwood -> Java!");
-//    Redwood.log("Hello from Redwood -> Java again!");
+//    topLogger.warning("I'm warning you!");
+//    topLogger.severe("Now I'm using my severe voice.");
+//    topLogger.info("FYI");
+//
+//    Redwood.log(Redwood.DBG, "adapting");
+//    JavaUtilLoggingAdaptor.adapt();
+//    topLogger.warning("I'm warning you in Redwood!");
+//    JavaUtilLoggingAdaptor.adapt(); // should be safe to call this twice
+//    topLogger.severe("Now I'm using my severe voice in Redwood!");
+//    topLogger.info("FYI: Redwood rocks");
+//
+//    // make sure original java.util.logging levels are respected
+//    topLogger.setLevel(Level.OFF);
+//    topLogger.severe("We shouldn't see this message.");
+//
+//    Redwood.log(Redwood.DBG, "at the bottom");
+//    Redwood.endTrack("Adaptation test");
+    
+    // Reverse mapping
+    Logger topLogger = Logger.getLogger("global");
+    Redwood.log("Hello from Redwood!");
+    RedwoodConfiguration.empty().rootHandler(
+        RedirectOutputHandler.fromJavaUtilLogging(topLogger)).apply();
+    Redwood.log("Hello from Redwood -> Java!");
+    Redwood.log("Hello from Redwood -> Java again!");
+    Redwood.startTrack("a track");
+    Redwood.log("Inside a track");
+    Redwood.endTrack("a track");
   }
 }

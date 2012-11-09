@@ -1435,10 +1435,13 @@ public class Redwood {
      * Log a message to the channels specified in this RedwoodChannels object.
      * @param obj The object to log
      */
-    public void log(Object obj) {
-      Object[] newArgs = new Object[channelNames.length+1];
-      System.arraycopy(channelNames,0,newArgs,0,channelNames.length);
-      newArgs[channelNames.length] = obj;
+    public void log(Object... args) {
+      Object[] newArgs = new Object[channelNames.length + args.length];
+      for (int i = 0; i < args.length-1; ++i) {
+        newArgs[i] = args[i];
+      }
+      System.arraycopy(channelNames, 0, newArgs, args.length - 1, channelNames.length);
+      newArgs[newArgs.length - 1] = args[args.length - 1];
       Redwood.log(newArgs);
     }
 
